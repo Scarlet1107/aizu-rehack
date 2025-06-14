@@ -11,24 +11,14 @@ export interface ChatProps {
   chatHistory: ChatMessage[];
   sendMessage: () => void;
   transitionToNextApp: () => void;
+  opponent: {
+    name: string;
+    level: number;
+    hp: number;
+    maxHp: number;
+    sprite: string;
+  };
 }
-
-const opponents = [
-  {
-    name: 'SEEL',
-    level: 69,
-    hp: 90,
-    maxHp: 100,
-    sprite: '/greninja.svg',
-  },
-  {
-    name: 'SEEL',
-    level: 69,
-    hp: 90,
-    maxHp: 100,
-    sprite: '/greninja.svg',
-  },
-];
 
 export default function PokemonChat({
   message,
@@ -37,10 +27,12 @@ export default function PokemonChat({
   chatHistory,
   sendMessage,
   transitionToNextApp,
+  opponent,
 }: ChatProps) {
   return (
     <div className='h-screen w-screen py-6 bg-neutral-700'>
       <Screen
+        opponent={opponent}
         message={message}
         setMessage={setMessage}
         isLoading={isLoading}
@@ -59,11 +51,10 @@ function Screen({
   chatHistory,
   sendMessage,
   transitionToNextApp,
+  opponent,
 }: ChatProps) {
   const [showChatInput, setShowChatInput] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
-
-  const opponent = opponents[Math.floor(Math.random() * opponents.length)];
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -102,8 +93,8 @@ function Screen({
         <Image
           src='/person.png'
           alt='Player'
-          width={256}
-          height={256}
+          width={200}
+          height={200}
           className='object-contain'
         />
         {/* Player Pokemon Info */}
@@ -156,26 +147,28 @@ function Screen({
         ) : (
           /* Chat Input */
           <div className='grid p-2 h-full'>
-            <div className='flex gap-2 mb-2'>
+            <form
+              className='flex gap-2 mb-2'
+              onSubmit={(e) => {
+                e.preventDefault();
+                sendMessage();
+              }}>
               <input
                 type='text'
                 value={message}
                 onChange={(e) => !isLoading && setMessage(e.target.value)}
-                onKeyDown={(e) =>
-                  e.key === 'Enter' && !isLoading && sendMessage()
-                }
                 placeholder='なにをはなす？'
                 className='flex-1 p-2 border-2 border-black text-sm font-mono'
                 autoFocus
                 disabled={isLoading}
               />
               <button
-                onClick={sendMessage}
+                type='submit'
                 className='px-3 py-2 bg-blue-500 text-white border-2 border-black text-xs font-bold hover:bg-blue-600'
                 disabled={isLoading}>
                 おくる
               </button>
-            </div>
+            </form>
             <button
               onClick={handleBackClick}
               className='w-full bg-gray-100 border-2 border-black p-2 text-sm font-bold hover:bg-gray-200'>
