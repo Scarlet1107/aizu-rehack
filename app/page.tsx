@@ -1,7 +1,9 @@
+import PokemonChat from './pokemon';
+
 export default function Home() {
   return (
-    <div>
-      test
-    </div>
+    <main>
+      <PokemonChat />
+    </main>
   );
 }

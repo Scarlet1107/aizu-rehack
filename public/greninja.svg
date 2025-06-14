@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Body -->
+  <ellipse cx="100" cy="120" rx="45" ry="60" fill="#2E5984"/>
+  
+  <!-- Head -->
+  <ellipse cx="100" cy="70" rx="35" ry="40" fill="#4A90E2"/>
+  
+  <!-- Head spikes/fins -->
+  <path d="M70 50 Q60 30 50 40 Q65 45 70 50" fill="#1A365D"/>
+  <path d="M130 50 Q140 30 150 40 Q135 45 130 50" fill="#1A365D"/>
+  <path d="M100 30 Q90 15 110 15 Q100 25 100 30" fill="#1A365D"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="90" cy="65" rx="8" ry="12" fill="#FFD700"/>
+  <ellipse cx="110" cy="65" rx="8" ry="12" fill="#FFD700"/>
+  
+  <!-- Eye pupils -->
+  <ellipse cx="90" cy="65" rx="4" ry="8" fill="#000000"/>
+  <ellipse cx="110" cy="65" rx="4" ry="8" fill="#000000"/>
+  
+  <!-- Mouth area -->
+  <path d="M85 80 Q100 85 115 80" stroke="#1A365D" fill="none" stroke-width="2"/>
+  
+  <!-- Arms -->
+  <ellipse cx="65" cy="100" rx="15" ry="35" fill="#4A90E2"/>
+  <ellipse cx="135" cy="100" rx="15" ry="35" fill="#4A90E2"/>
+  
+  <!-- Hands -->
+  <circle cx="60" cy="130" r="12" fill="#2E5984"/>
+  <circle cx="140" cy="130" r="12" fill="#2E5984"/>
+  
+  <!-- Legs -->
+  <ellipse cx="85" cy="160" rx="12" ry="25" fill="#4A90E2"/>
+  <ellipse cx="115" cy="160" rx="12" ry="25" fill="#4A90E2"/>
+  
+  <!-- Feet -->
+  <ellipse cx="80" cy="185" rx="15" ry="8" fill="#2E5984"/>
+  <ellipse cx="120" cy="185" rx="15" ry="8" fill="#2E5984"/>
+  
+  <!-- Chest marking -->
+  <path d="M85 110 Q100 105 115 110 Q100 120 85 110" fill="#FFD700"/>
+  
+  <!-- Tongue scarf -->
+  <path d="M100 85 Q95 95 90 105 Q85 115 80 125" stroke="#DC143C" fill="none" stroke-width="4"/>
+  <path d="M100 85 Q105 95 110 105 Q115 115 120 125" stroke="#DC143C" fill="none" stroke-width="4"/>
+  
+  <!-- Dark markings on body -->
+  <path d="M75 95 Q85 90 95 95 Q85 105 75 95" fill="#1A365D"/>
+  <path d="M105 95 Q115 90 125 95 Q115 105 105 95" fill="#1A365D"/>
+  
+  <!-- Leg markings -->
+  <ellipse cx="85" cy="150" rx="8" ry="15" fill="#1A365D"/>
+  <ellipse cx="115" cy="150" rx="8" ry="15" fill="#1A365D"/>
+</svg> 
