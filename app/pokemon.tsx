@@ -1,33 +1,65 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import Image from 'next/image';
+import { ChatMessage } from './page';
 
-interface ChatMessage {
-  id: number;
-  text: string;
-  sender: 'player' | 'opponent';
+interface Props {
+  message: string;
+  setMessage: Dispatch<SetStateAction<string>>;
+  isLoading: boolean;
+  chatHistory: ChatMessage[];
+  sendMessage: () => void;
 }
 
-export default function PokemonChat() {
+const opponents = [
+  {
+    name: 'SEEL',
+    level: 69,
+    hp: 90,
+    maxHp: 100,
+    sprite: '/greninja.svg',
+  },
+  {
+    name: 'SEEL',
+    level: 69,
+    hp: 90,
+    maxHp: 100,
+    sprite: '/greninja.svg',
+  },
+];
+
+export default function PokemonChat({
+  message,
+  setMessage,
+  isLoading,
+  chatHistory,
+  sendMessage,
+}: Props) {
   return (
     <div className='h-screen w-screen py-6 bg-neutral-700'>
-      <Screen />
+      <Screen
+        message={message}
+        setMessage={setMessage}
+        isLoading={isLoading}
+        chatHistory={chatHistory}
+        sendMessage={sendMessage}
+      />
     </div>
   );
 }
 
-function Screen() {
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: 1,
-      text: 'どうする？',
-      sender: 'opponent',
-    },
-  ]);
-  const [inputText, setInputText] = useState('');
+function Screen({
+  message,
+  setMessage,
+  isLoading,
+  chatHistory,
+  sendMessage,
+}: Props) {
   const [showChatInput, setShowChatInput] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const opponent = opponents[Math.floor(Math.random() * opponents.length)];
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -35,46 +67,7 @@ function Screen() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [chatMessages]);
-
-  const handleSendMessage = () => {
-    if (!inputText.trim()) return;
-
-    const newMessage: ChatMessage = {
-      id: chatMessages.length + 1,
-      text: inputText,
-      sender: 'player',
-    };
-
-    setChatMessages((prev) => [...prev, newMessage]);
-    setInputText('');
-
-    // Simulate opponent response
-    setTimeout(() => {
-      const opponentResponse: ChatMessage = {
-        id: chatMessages.length + 2,
-        text: getOpponentResponse(),
-        sender: 'opponent',
-      };
-      setChatMessages((prev) => [...prev, opponentResponse]);
-    }, 1000);
-  };
-
-  const getOpponentResponse = () => {
-    const responses = [
-      'What will RAICHU do?',
-      'SEEL used Water Gun!',
-      "It's super effective!",
-      'RAICHU is confused!',
-      "SEEL's attack missed!",
-      "What's your next move?",
-      'The wild SEEL appeared!',
-      'RAICHU used Thunder!',
-      'Critical hit!',
-      'SEEL fainted!',
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
+  }, [chatHistory]);
 
   const handleFightClick = () => {
     setShowChatInput(true);
@@ -89,9 +82,14 @@ function Screen() {
       {/* Top Section - Opponent Pokemon */}
       <div className='flex justify-between items-start h-48 relative z-10'>
         {/* Opponent Pokemon Info */}
-        <PokemonInfo name='SEEL' level={69} hp={90} maxHp={100} />
+        <PokemonInfo
+          name={opponent.name}
+          level={opponent.level}
+          hp={opponent.hp}
+          maxHp={opponent.maxHp}
+        />
         {/* Opponent Pokemon Sprite */}
-        <PokemonSprite src='/greninja.svg' />
+        <PokemonSprite src={opponent.sprite} />
       </div>
 
       {/* Middle Section - Player Pokemon */}
@@ -118,8 +116,11 @@ function Screen() {
       <div className='p-3 bg-white border-4 border-black rounded-lg overflow-hidden grid grid-cols-2 place-content-center relative z-10'>
         {/* Chat Messages */}
         <div className='flex-1 overflow-y-auto p-4 bg-white h-36'>
-          <div className='space-y-2 overflow-y-scroll'>
-            {chatMessages.map((message) => (
+          <div className='space-y-2 flex flex-col overflow-y-scroll'>
+            {chatHistory.length === 0 && (
+              <div className='text-gray-500 font-mono'>どうする？</div>
+            )}
+            {chatHistory.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${
@@ -154,16 +155,20 @@ function Screen() {
             <div className='flex gap-2 mb-2'>
               <input
                 type='text'
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                value={message}
+                onChange={(e) => !isLoading && setMessage(e.target.value)}
+                onKeyDown={(e) =>
+                  e.key === 'Enter' && !isLoading && sendMessage()
+                }
                 placeholder='なにをはなす？'
                 className='flex-1 p-2 border-2 border-black text-sm font-mono'
                 autoFocus
+                disabled={isLoading}
               />
               <button
-                onClick={handleSendMessage}
-                className='px-3 py-2 bg-blue-500 text-white border-2 border-black text-xs font-bold hover:bg-blue-600'>
+                onClick={sendMessage}
+                className='px-3 py-2 bg-blue-500 text-white border-2 border-black text-xs font-bold hover:bg-blue-600'
+                disabled={isLoading}>
                 おくる
               </button>
             </div>
