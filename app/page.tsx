@@ -1,7 +1,8 @@
-export default function Home() {
+import MenheraTodo from "./menheraTodo";
+
+export default function Page() {
+
   return (
-    <div>
-      test
-    </div>
+    <MenheraTodo />
   );
 }
