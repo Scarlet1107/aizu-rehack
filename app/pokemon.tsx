@@ -4,12 +4,13 @@ import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import Image from 'next/image';
 import { ChatMessage } from './page';
 
-interface Props {
+export interface ChatProps {
   message: string;
   setMessage: Dispatch<SetStateAction<string>>;
   isLoading: boolean;
   chatHistory: ChatMessage[];
   sendMessage: () => void;
+  transitionToNextApp: () => void;
 }
 
 const opponents = [
@@ -35,7 +36,8 @@ export default function PokemonChat({
   isLoading,
   chatHistory,
   sendMessage,
-}: Props) {
+  transitionToNextApp,
+}: ChatProps) {
   return (
     <div className='h-screen w-screen py-6 bg-neutral-700'>
       <Screen
@@ -44,6 +46,7 @@ export default function PokemonChat({
         isLoading={isLoading}
         chatHistory={chatHistory}
         sendMessage={sendMessage}
+        transitionToNextApp={transitionToNextApp}
       />
     </div>
   );
@@ -55,7 +58,8 @@ function Screen({
   isLoading,
   chatHistory,
   sendMessage,
-}: Props) {
+  transitionToNextApp,
+}: ChatProps) {
   const [showChatInput, setShowChatInput] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -147,7 +151,7 @@ function Screen({
             <Button onClick={handleFightClick}>はなす</Button>
             <Button onClick={handleFightClick}>しゃべる</Button>
             <Button onClick={handleFightClick}>さけぶ</Button>
-            <Button onClick={handleFightClick}>にげる</Button>
+            <Button onClick={transitionToNextApp}>にげる</Button>
           </div>
         ) : (
           /* Chat Input */
