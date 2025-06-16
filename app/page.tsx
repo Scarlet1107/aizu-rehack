@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import PokemonChat from './pokemon';
 import MenheraTodo from './menheraTodo';
+import WordCounter from './wordCounter';
 
 export interface ChatMessage {
   id: number;
@@ -10,8 +11,8 @@ export interface ChatMessage {
   sender: 'player' | 'opponent';
 }
 
-type AppTypes = 'pokemon' | 'menheraTodo';
-const apps: AppTypes[] = ['pokemon', 'menheraTodo'];
+type AppTypes = 'pokemon' | 'menheraTodo' | 'wordCounter';
+const apps: AppTypes[] = ['pokemon', 'menheraTodo', 'wordCounter'];
 
 const opponents = {
   pokemon: {
@@ -178,6 +179,17 @@ export default function Home() {
       )}
       {currentApp === 'menheraTodo' && (
         <MenheraTodo
+          opponent={Object.values(opponents)[opponentIdx]}
+          message={message}
+          setMessage={setMessage}
+          isLoading={isLoading}
+          chatHistory={chatHistory}
+          sendMessage={sendMessage}
+          transitionToNextApp={transitionToNextApp}
+        />
+      )}
+      {currentApp === 'wordCounter' && (
+        <WordCounter
           opponent={Object.values(opponents)[opponentIdx]}
           message={message}
           setMessage={setMessage}
