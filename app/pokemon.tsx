@@ -99,7 +99,7 @@ function Screen({
         />
         {/* Player Pokemon Info */}
         <PokemonInfo
-          name='RAICHU'
+          name='Linus Torvalds'
           className='mb-12'
           level={42}
           hp={39}
