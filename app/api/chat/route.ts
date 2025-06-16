@@ -52,21 +52,18 @@ export async function POST(request: Request) {
       );
     }
 
+    const prompt = `
+    ${personalities[opponent as keyof typeof personalities]}
+
+    The user's message is:
+    ${message}
+    reply in the same language as the user's message.
+    `;
+
     // Generate AI response
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash-001',
-      contents: [
-        {
-          role: 'system',
-          parts: [
-            { text: personalities[opponent as keyof typeof personalities] },
-          ], // ヘラちゃんの性格を設定したり
-        },
-        {
-          role: 'user',
-          parts: [{ text: message.trim() }],
-        },
-      ],
+      contents: prompt,
     });
 
     // Validate AI response
