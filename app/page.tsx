@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import PokemonChat from './pokemon';
 import MenheraTodo from './menheraTodo';
 import WordCounter from './wordCounter';
@@ -16,9 +17,9 @@ const apps: AppTypes[] = ['pokemon', 'menheraTodo', 'wordCounter'];
 
 // アプリごとのチャット上限回数
 const chatLimits: Record<AppTypes, number> = {
-  pokemon: 1,
-  menheraTodo: 1,
-  wordCounter: 1,
+  pokemon: 3,
+  menheraTodo: 5,
+  wordCounter: 2,
 };
 
 const opponents = {
@@ -38,24 +39,39 @@ const opponents = {
   },
 };
 
+// 配列をシャッフルするユーティリティ
+function shuffleArray<T>(array: T[]): T[] {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 export default function Home() {
-  const [currentApp, setCurrentApp] = useState<AppTypes>(apps[0]);
+  // 初回レンダリング時にアプリの順序をランダムに決定
+  const appOrder = useMemo(() => shuffleArray(apps), []);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentApp = appOrder[currentIndex];
+
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [opponentIdx, setOpponentIdx] = useState<number | null>(null);
   const [remainingChats, setRemainingChats] = useState<number>(
-    chatLimits[apps[0]]
+    chatLimits[currentApp]
   );
-
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // 初回レンダリングでランダムに相手を決定
   useEffect(() => {
-    setOpponentIdx(Math.floor(Math.random() * Object.keys(opponents).length));
+    setOpponentIdx(
+      Math.floor(Math.random() * Object.keys(opponents).length)
+    );
   }, []);
 
-  // currentAppが変わるたびにタイマーと残チャット回数をリセット
+  // currentApp が変わるたびにタイマーと残チャット回数をリセット
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setRemainingChats(chatLimits[currentApp]);
@@ -67,6 +83,7 @@ export default function Home() {
     };
   }, [currentApp]);
 
+  // メッセージ送信
   const sendMessage = async () => {
     if (message.trim() === '' || isLoading) return;
 
@@ -82,7 +99,9 @@ export default function Home() {
 
     try {
       if (opponentIdx === null) return;
-      const opponentKey = Object.keys(opponents)[opponentIdx] as keyof typeof opponents;
+      const opponentKey = Object.keys(opponents)[
+        opponentIdx
+      ] as keyof typeof opponents;
 
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -109,11 +128,11 @@ export default function Home() {
       setMessage('');
       setIsLoading(false);
 
-      // AIレスポンスを追加したあとで、残チャットが 0 なら少し待って遷移
+      // AIレスポンス後、残チャットが 0 なら5秒後に切り替え
       if (nextRem !== undefined && nextRem <= 0) {
         setTimeout(() => {
           transitionToNextApp();
-        }, 3500); // 3.5秒の猶予
+        }, 5000);
       }
     }
   };
@@ -130,23 +149,25 @@ export default function Home() {
     const errorMap: Record<string, string> = {
       'API configuration error': 'API設定エラーです',
       'Invalid request format': '無効なリクエスト形式です',
-      'Message is required and must be a non-empty string': 'メッセージを入力してください',
-      'Message is too long (max 10000 characters)': 'メッセージが長すぎます（最大10000文字）',
+      'Message is required and must be a non-empty string':
+        'メッセージを入力してください',
+      'Message is too long (max 10000 characters)':
+        'メッセージが長すぎます（最大10000文字）',
       'Failed to generate response': '返答の生成に失敗しました',
       'Authentication failed': '認証に失敗しました',
       'Service temporarily unavailable': 'サービスが一時的に利用できません',
-      'Network error, please try again': 'ネットワークエラーです。もう一度お試しください',
+      'Network error, please try again':
+        'ネットワークエラーです。もう一度お試しください',
       'An unexpected error occurred': '予期しないエラーが発生しました',
     };
     return errorMap[errorMessage] || errorMessage;
   };
 
+  // 次のアプリへ切り替え
   const transitionToNextApp = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    const currentIdx = apps.indexOf(currentApp);
-    const candidates = apps.filter((_, i) => i !== currentIdx);
-    const nextApp = candidates[Math.floor(Math.random() * candidates.length)];
-    setCurrentApp(nextApp);
+    // order に従って次の index へ
+    setCurrentIndex((prev) => (prev + 1) % appOrder.length);
     setChatHistory([]);
   };
 
@@ -167,9 +188,19 @@ export default function Home() {
 
   return (
     <main>
-      {currentApp === 'pokemon' && <PokemonChat {...commonProps} />}
-      {currentApp === 'menheraTodo' && <MenheraTodo {...commonProps} />}
-      {currentApp === 'wordCounter' && <WordCounter {...commonProps} />}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentApp}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {currentApp === 'pokemon' && <PokemonChat {...commonProps} />}
+          {currentApp === 'menheraTodo' && <MenheraTodo {...commonProps} />}
+          {currentApp === 'wordCounter' && <WordCounter {...commonProps} />}
+        </motion.div>
+      </AnimatePresence>
     </main>
   );
 }
