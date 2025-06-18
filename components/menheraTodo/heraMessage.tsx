@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { getHeraMood, getShakeIntensity, HeraMood } from "@/lib/menheraTodo/state";
 import { useHera } from "@/lib/menheraTodo/context";
+import { ChatMessage } from "@/app/page"; // 適宜パスを合わせてください
 
 interface HeraMessageProps {
+  chatHistory: ChatMessage[];
   delay?: number;
-  shakeIntensity?: number; // 1〜10くらいまでいけるように
 }
 
 const moodColorMap: Record<HeraMood, string> = {
@@ -34,33 +35,35 @@ const moodFontMap: Record<HeraMood, string> = {
   非常に悪い: "font-creepy",
 };
 
-const HeraMessage: React.FC<HeraMessageProps> = ({ delay = 60 }) => {
-  const { affection, message } = useHera();
-  const [displayedText, setDisplayedText] = useState("");
+const HeraMessage: React.FC<HeraMessageProps> = ({ chatHistory, delay = 60 }) => {
+  const { affection } = useHera();
   const controls = useAnimation();
   const shakeIntensity = getShakeIntensity(affection);
-
   const mood = getHeraMood(affection);
   const background = moodColorMap[mood];
   const shadow = moodShadowMap[mood];
   const font = moodFontMap[mood];
-  const textSize = message.length > 50 ? "text-sm" : "text-base md:text-lg";
 
+  // opponent の最新メッセージを取得
+  const latestOpponent = chatHistory
+    .filter((m) => m.sender === 'opponent')
+    .slice(-1)[0]?.text ?? '';
+
+  const [displayedText, setDisplayedText] = useState("");
+  const textSize = latestOpponent.length > 50 ? "text-sm" : "text-base md:text-lg";
   const intensity = Math.max(0, Math.min(shakeIntensity, 10));
-  const offset = intensity * 0.2; // 揺れの強さを調整できる
+  const offset = intensity * 0.2;
 
   useEffect(() => {
     setDisplayedText("");
-    let currentIndex = 0;
-
+    let idx = 0;
     const interval = setInterval(() => {
-      if (currentIndex >= message.length) {
+      if (idx >= latestOpponent.length) {
         clearInterval(interval);
         return;
       }
-
-      const char = message.charAt(currentIndex);
-      setDisplayedText((prev) => prev + char);
+      const ch = latestOpponent[idx];
+      setDisplayedText((prev) => prev + ch);
       if (shakeIntensity > 0) {
         controls.start({
           x: [0, -offset, offset, -offset / 2, offset / 2, 0],
@@ -68,17 +71,14 @@ const HeraMessage: React.FC<HeraMessageProps> = ({ delay = 60 }) => {
           transition: { duration: 0.25, ease: "easeInOut" },
         });
       }
-
-      currentIndex += 1;
+      idx++;
     }, delay);
 
     return () => clearInterval(interval);
-  }, [message, delay]);
+  }, [latestOpponent, delay, controls, offset, shakeIntensity]);
 
   return (
-    <div
-      className={`z-50 p-4 relative rounded-xl whitespace-pre-wrap transition-all duration-300 ${background} ${shadow} ${font} ${textSize} shadow-md`}
-    >
+    <div className={`z-50 p-4 relative rounded-xl whitespace-pre-wrap transition-all duration-300 ${background} ${shadow} ${font} ${textSize} shadow-md`}>
       <motion.span animate={controls} className="inline-block">
         {displayedText}
       </motion.span>

@@ -11,8 +11,14 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useHera } from "@/lib/menheraTodo/context";
+import { ChatMessage } from "@/app/page";
 
-export default function Header() {
+interface Props {
+  chatHistory: ChatMessage[];
+  setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+}
+
+export default function Header({ chatHistory, setChatHistory }: Props) {
   const tabs = [
     {
       href: "/",
@@ -37,11 +43,20 @@ export default function Header() {
   ];
   const pathname = usePathname();
 
-  const { setHeraStatus } = useHera();
   const handleNavigation = () => {
-    setHeraStatus({
-      message: "なんで他のページに行こうとするの？私のことなんかどうでもいいんだ...",
-    });
+    // ChatHistoryにユーザーとOpponentsのメッセージを追加
+    const nextId = chatHistory.length + 1;
+    const userMsg: ChatMessage = {
+      id: nextId,
+      sender: "player",
+      text: "他のページに行きたい",
+    };
+    const oppMsg: ChatMessage = {
+      id: nextId + 1,
+      sender: "opponent",
+      text: "なんで他のページに行こうとするの？私のことなんかどうでもいいんだ...",
+    };
+    setChatHistory((prev) => [...prev, userMsg, oppMsg]);
   };
   return (
     <header className="w-full border-b bg-pink-50/80 dark:bg-stone-700/80 border-pink-200 dark:border-stone-900 px-4 shadow-sm h-14 flex items-center justify-between sm:py-8">

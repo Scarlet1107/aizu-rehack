@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import PokemonChat from './pokemon';
-import MenheraTodo from './menheraTodo';
+import MenheraTodo, { DEFAULT_HERA_MESSAGE } from './menheraTodo';
 import WordCounter from './wordCounter';
 
 export interface ChatMessage {
@@ -53,7 +53,8 @@ export default function Home() {
   // 初回レンダリング時にアプリの順序をランダムに決定
   const appOrder = useMemo(() => shuffleArray(apps), []);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const currentApp = appOrder[currentIndex];
+  // const currentApp = appOrder[currentIndex];
+  const currentApp = apps[1]; // デバッグ用に固定
 
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -64,12 +65,18 @@ export default function Home() {
   );
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 初回レンダリングでランダムに相手を決定
+  // 初回レンダリングでランダムに相手を決定 (ただしMenheraTodoは固定)
   useEffect(() => {
-    setOpponentIdx(
-      Math.floor(Math.random() * Object.keys(opponents).length)
-    );
-  }, []);
+    if (currentApp === 'menheraTodo') {
+      setOpponentIdx(Object.keys(opponents).indexOf('hera'));
+    } else {
+      setOpponentIdx(
+        Math.floor(
+          Math.random() * Object.keys(opponents).length
+        )
+      );
+    }
+  }, [currentApp]);
 
   // currentApp が変わるたびにタイマーと残チャット回数をリセット
   useEffect(() => {
@@ -77,7 +84,7 @@ export default function Home() {
     setRemainingChats(chatLimits[currentApp]);
     timerRef.current = setTimeout(() => {
       transitionToNextApp();
-    }, 180 * 1000);
+    }, 60 * 1000);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
@@ -137,11 +144,12 @@ export default function Home() {
     }
   };
 
-  // menheraTodo に切り替わったら相手をヘラちゃんに
+  // MenheraTodo表示時に初期チャットをセット
   useEffect(() => {
     if (currentApp === 'menheraTodo') {
-      const idx = Object.keys(opponents).indexOf('hera');
-      setOpponentIdx(idx);
+      setChatHistory([
+        { id: 1, text: DEFAULT_HERA_MESSAGE, sender: 'opponent' }
+      ]);
     }
   }, [currentApp]);
 
@@ -197,7 +205,7 @@ export default function Home() {
           transition={{ duration: 0.5 }}
         >
           {currentApp === 'pokemon' && <PokemonChat {...commonProps} />}
-          {currentApp === 'menheraTodo' && <MenheraTodo {...commonProps} />}
+          {currentApp === 'menheraTodo' && <MenheraTodo {...commonProps} setChatHistory={setChatHistory} />}
           {currentApp === 'wordCounter' && <WordCounter {...commonProps} />}
         </motion.div>
       </AnimatePresence>
