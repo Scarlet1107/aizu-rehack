@@ -53,8 +53,8 @@ export default function Home() {
   // 初回レンダリング時にアプリの順序をランダムに決定
   const appOrder = useMemo(() => shuffleArray(apps), []);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const currentApp = appOrder[currentIndex];
-  const currentApp = apps[1]; // デバッグ用に固定
+  const currentApp = appOrder[currentIndex];
+  // const currentApp = apps[1]; // デバッグ用に固定
 
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);

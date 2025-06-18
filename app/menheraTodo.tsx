@@ -54,7 +54,7 @@ const MenheraTodo = ({
           {/* メインイメージ */}
           <HeraMainImage />
 
-          <ChatForm message={message} setMessage={setMessage} sendMessage={sendMessage} />
+          <ChatForm message={message} setMessage={setMessage} sendMessage={sendMessage} isLoading={isLoading} />
         </div>
       </main>
 
