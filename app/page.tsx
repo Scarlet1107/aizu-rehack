@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import PokemonChat from './pokemon';
 import MenheraTodo, { DEFAULT_HERA_MESSAGE } from './menheraTodo';
 import WordCounter from './wordCounter';
+import SocialFeed from './sns';
 
 export interface ChatMessage {
   id: number;
@@ -12,14 +13,15 @@ export interface ChatMessage {
   sender: 'player' | 'opponent';
 }
 
-type AppTypes = 'pokemon' | 'menheraTodo' | 'wordCounter';
-const apps: AppTypes[] = ['pokemon', 'menheraTodo', 'wordCounter'];
+type AppTypes = 'pokemon' | 'menheraTodo' | 'wordCounter' | 'sns';
+const apps: AppTypes[] = ['pokemon', 'menheraTodo', 'wordCounter', 'sns'];
 
 // アプリごとのチャット上限回数
 const chatLimits: Record<AppTypes, number> = {
   pokemon: 3,
   menheraTodo: 5,
   wordCounter: 1,
+  sns: 2,
 };
 
 const opponents = {
@@ -242,6 +244,8 @@ export default function Home() {
           {currentApp === 'pokemon' && <PokemonChat {...commonProps} />}
           {currentApp === 'menheraTodo' && <MenheraTodo {...commonProps} setChatHistory={setChatHistory} />}
           {currentApp === 'wordCounter' && <WordCounter {...commonProps} />}
+          {currentApp === 'sns' && <SocialFeed {...commonProps} />}
+
         </motion.div>
       </AnimatePresence>
     </main>
