@@ -107,10 +107,10 @@ export default function Header({ chatHistory, setChatHistory, transitionToNextAp
                           そう言ってまた来てくれなくなるんでしょ
                           <Image
                             src="/hera-chan/dontlogout/very-bad.png"
-                            height={300}
-                            width={200}
+                            height={500}
+                            width={800}
                             alt="ひきとめへらちゃん"
-                            className="flex items-center justify-center w-full h-auto -mb-20"
+                            className="flex items-center justify-center w-full -mb-20"
                           />
                         </AlertDialogDescription>
                       </AlertDialogHeader>

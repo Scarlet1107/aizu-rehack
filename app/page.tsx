@@ -19,7 +19,7 @@ const apps: AppTypes[] = ['pokemon', 'menheraTodo', 'wordCounter'];
 const chatLimits: Record<AppTypes, number> = {
   pokemon: 3,
   menheraTodo: 5,
-  wordCounter: 2,
+  wordCounter: 1,
 };
 
 const opponents = {
