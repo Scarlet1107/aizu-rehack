@@ -54,7 +54,7 @@ export default function Home() {
   const appOrder = useMemo(() => shuffleArray(apps), []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentApp = appOrder[currentIndex];
-  // const currentApp = apps[1]; // デバッグ用に固定
+  // const currentApp = apps[2]; // デバッグ用に固定
 
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);

@@ -21,6 +21,8 @@ export default function WordCounter({
     setMessage,
     isLoading,
     sendMessage,
+    remainingChats,
+    opponent,
 }: ChatProps) {
     const [isMobile, setIsMobile] = useState<boolean | null>(null);
     const checkMobile = useIsMobile();
@@ -56,7 +58,16 @@ export default function WordCounter({
                             forceMount
                             className="data-[state=inactive]:hidden"
                         >
-                            <RightPanel />
+                            <RightPanel
+                                transitionToNextApp={transitionToNextApp}
+                                chatHistory={chatHistory}
+                                message={message}
+                                setMessage={setMessage}
+                                isLoading={isLoading}
+                                sendMessage={sendMessage}
+                                remainingChats={remainingChats}
+                                opponent={opponent}
+                            />
                         </TabsContent>
                         <TabsList className="w-full grid grid-cols-2 mt-4 fixed bottom-1 left-0">
                             <TabsTrigger value="counter">文字数カウント</TabsTrigger>
@@ -71,7 +82,16 @@ export default function WordCounter({
                             </ResizablePanel>
                             <ResizableHandle withHandle />
                             <ResizablePanel defaultSize={50} minSize={35}>
-                                <RightPanel />
+                                <RightPanel
+                                    transitionToNextApp={transitionToNextApp}
+                                    chatHistory={chatHistory}
+                                    message={message}
+                                    setMessage={setMessage}
+                                    isLoading={isLoading}
+                                    sendMessage={sendMessage}
+                                    remainingChats={remainingChats}
+                                    opponent={opponent}
+                                />
                             </ResizablePanel>
                         </ResizablePanelGroup>
                     </div>
