@@ -68,7 +68,7 @@ const ChatForm: React.FC<ChatProps> = ({ message, setMessage, sendMessage, isLoa
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <button
-            className='fixed right-4 bottom-20 md:bottom-28 md:right-20 bg-pink-500 hover:bg-pink-600 text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center shadow-lg transition-all duration-200 ease-in-out'
+            className='fixed right-4 bottom-20 md:bottom-28 md:right-20 bg-pink-500 hover:bg-pink-600 text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center shadow-lg transition-all duration-200 ease-in-out md:hidden'
             disabled={isLoading}
           >
             <Mail className='w-8 h-8 text-pink-50 font-bold' />

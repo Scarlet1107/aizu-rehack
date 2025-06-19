@@ -37,6 +37,41 @@ const opponents = {
     maxHp: 100,
     sprite: '/hera-chan/icon/bad.png',
   },
+  arabicMystery: {
+    name: '謎のアラビア語スピーカー',
+    level: 50,
+    hp: 100,
+    maxHp: 100,
+    sprite: '/arabic-mystery.png',
+  },
+  goku: {
+    name: '孫悟空',
+    level: 9001,
+    hp: 200,
+    maxHp: 200,
+    sprite: '/goku.png',
+  },
+  salaryman: {
+    name: '激務サラリーマン',
+    level: 30,
+    hp: 80,
+    maxHp: 80,
+    sprite: '/salaryman.png',
+  },
+  medievalKnight: {
+    name: '中世の騎士',
+    level: 45,
+    hp: 120,
+    maxHp: 120,
+    sprite: '/medieval-knight.png',
+  },
+  pirateCaptain: {
+    name: '海賊船長',
+    level: 55,
+    hp: 110,
+    maxHp: 110,
+    sprite: '/pirate-captain.png',
+  },
 };
 
 // 配列をシャッフルするユーティリティ
@@ -54,7 +89,7 @@ export default function Home() {
   const appOrder = useMemo(() => shuffleArray(apps), []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentApp = appOrder[currentIndex];
-  // const currentApp = apps[2]; // デバッグ用に固定
+  // const currentApp = apps[1]; // デバッグ用に固定
 
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);

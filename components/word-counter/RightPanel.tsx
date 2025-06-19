@@ -71,17 +71,25 @@ const RightPanel = ({ transitionToNextApp, chatHistory, message, setMessage, isL
       <Separator className="mb-4" />
 
       <div className="fixed md:static bottom-8 right-2 md:flex-shrink-0 bg-white pb-4">
-        <div className=" items-center gap-2 pr-4 flex">
+        <div className="items-center gap-2 pr-4 flex">
           <Input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            // onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                sendMessage();
+                setMessage("");
+              }
+            }}
             placeholder="メッセージを入力してください..."
             className="flex-1"
           />
           <Button
-            onClick={() => sendMessage()}
+            onClick={() => {
+              sendMessage();
+              setMessage("");
+            }}
             className="bg-blue-500 hover:bg-blue-600 transition-colors"
             disabled={isLoading || !message.trim()}
           >

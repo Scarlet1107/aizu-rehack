@@ -39,7 +39,7 @@ const MenheraTodo = ({
     <HeraProvider status={status}>
       <main className='min-h-screen flex flex-col items-center'>
         <div className='w-full h-14 shadow-sm flex items-center justify-end'>
-          <Header chatHistory={chatHistory} setChatHistory={setChatHistory} />
+          <Header chatHistory={chatHistory} setChatHistory={setChatHistory} transitionToNextApp={transitionToNextApp} />
         </div>
         <DynamicBackground />
         <div className='z-10 min-w-0 w-full pt-4 flex-1 flex flex-col'>
