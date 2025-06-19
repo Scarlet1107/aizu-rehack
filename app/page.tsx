@@ -5,6 +5,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import PokemonChat from './pokemon';
 import MenheraTodo, { DEFAULT_HERA_MESSAGE } from './menheraTodo';
 import WordCounter from './wordCounter';
+import dynamic from 'next/dynamic';
+const DynamicTerminalClient = dynamic(() => import('@/components/TerminalClient'), {
+  ssr: false,
+  loading: () => <p style={{ color: "white", textAlign: "center", paddingTop: "20px" }}>Loading Terminal...</p>,
+});
+
 
 export interface ChatMessage {
   id: number;
@@ -12,14 +18,15 @@ export interface ChatMessage {
   sender: 'player' | 'opponent';
 }
 
-type AppTypes = 'pokemon' | 'menheraTodo' | 'wordCounter';
-const apps: AppTypes[] = ['pokemon', 'menheraTodo', 'wordCounter'];
+type AppTypes = 'pokemon' | 'menheraTodo' | 'wordCounter' | 'terminal';
+const apps: AppTypes[] = ['pokemon', 'menheraTodo', 'wordCounter', 'terminal'];
 
 // アプリごとのチャット上限回数
 const chatLimits: Record<AppTypes, number> = {
   pokemon: 3,
   menheraTodo: 5,
   wordCounter: 2,
+  terminal: 3, // アンディーのターミナル
 };
 
 const opponents = {
@@ -242,6 +249,7 @@ export default function Home() {
           {currentApp === 'pokemon' && <PokemonChat {...commonProps} />}
           {currentApp === 'menheraTodo' && <MenheraTodo {...commonProps} setChatHistory={setChatHistory} />}
           {currentApp === 'wordCounter' && <WordCounter {...commonProps} />}
+          {currentApp === 'terminal' && <DynamicTerminalClient {...commonProps} />}
         </motion.div>
       </AnimatePresence>
     </main>

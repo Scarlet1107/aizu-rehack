@@ -1,5 +1,6 @@
 'use client';
 
+import { ChatProps } from '@/app/pokemon';
 import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
@@ -90,7 +91,16 @@ const processJavaScriptCommand = (command: string): string | null => {
   return null; // JavaScript側で処理しない場合
 };
 
-const TerminalClient = () => {
+const TerminalClient = ({
+  transitionToNextApp,
+  chatHistory,
+  message,
+  setMessage,
+  isLoading,
+  sendMessage,
+  remainingChats,
+  opponent,
+}: ChatProps) => {
   const terminalRef = useRef<HTMLDivElement>(null);
   const termInstance = useRef<Terminal | null>(null);
   const fitAddonInstance = useRef<FitAddon | null>(null);
@@ -320,9 +330,12 @@ const TerminalClient = () => {
   }, [isTerminalInitialized]);
 
   return (
-    <>
-      <div ref={terminalRef} style={{ flex: 1, width: '100%', height: '100%', backgroundColor: '#1e1e1e' }} />
-    </>
+    <div style={{ padding: '20px', height: 'calc(100vh - 40px)', display: 'flex', flexDirection: 'column', backgroundColor: '#0d1117' }}>
+      <h1 style={{ color: 'white', marginBottom: '10px', textAlign: 'center' }}>Fake Shell Terminal</h1>
+      <div style={{ flex: 1, width: '100%', border: '1px solid #30363d', borderRadius: '6px', overflow: 'hidden' }}>
+        <div ref={terminalRef} style={{ flex: 1, width: '100%', height: '100%', backgroundColor: '#1e1e1e' }} />
+      </div>
+    </div>
   );
 };
 
