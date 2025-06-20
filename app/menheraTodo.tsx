@@ -11,7 +11,7 @@ import { MobileNavigation } from '@/components/menheraTodo/mobileNavigation';
 import { ChatProps } from './pokemon';
 import ChatForm from '@/components/menheraTodo/ChatForm';
 
-export const DEFAULT_HERA_MESSAGE = "わたしのこと好きじゃないの？嫌いになっちゃった？面倒くさいしもう会いたくないんでしょ";
+export const DEFAULT_HERA_MESSAGE = "おかえり。また、会えたね";
 
 interface MenheraTodoProps extends ChatProps {
   setChatHistory: React.Dispatch<React.SetStateAction<any>>;
@@ -27,8 +27,12 @@ const MenheraTodo = ({
   setChatHistory,
   sendMessage,
 }: MenheraTodoProps) => {
+
+  const affectionMap = [95, 75, 55, 35, 15];
+  const affection = affectionMap[5 - remainingChats] ?? 15;
+
   const status: HeraStatus = {
-    affection: 39,
+    affection,
     mood: '非常に悪い',
     event: 'very_long_gap',
     delta: 0,
@@ -49,7 +53,7 @@ const MenheraTodo = ({
           </div>
           {/* 好感度バッジ */}
           <div className='fixed right-4 bottom-40 md:bottom-56 md:right-20'>
-            <AffectionBadge />
+            <AffectionBadge remainingChats={remainingChats} />
           </div>
           {/* メインイメージ */}
           <HeraMainImage />

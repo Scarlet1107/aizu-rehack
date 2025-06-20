@@ -39,7 +39,7 @@ export default function SocialFeed({
         <div className="flex flex-col h-full bg-white">
             {/* Top Bar */}
             <div className="flex items-center px-4 py-2 border-b">
-                <h1 className="text-xl font-bold text-blue-500">Twitter</h1>
+                <h1 className="text-xl font-bold text-blue-500">Heratter</h1>
                 <Button
                     variant="ghost"
                     size="icon"
