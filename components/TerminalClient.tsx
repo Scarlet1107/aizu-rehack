@@ -54,8 +54,10 @@ const matrixMultiplyJS = (size: number): number => {
 };
 
 // JavaScriptでのコマンド処理（WASM以外の処理）
-const processJavaScriptCommand = (command: string): string | null => {
+const processJavaScriptCommand = (command: string, onGameStart?: () => void): string | null => {
   const trimmedCommand = command.trim();
+
+  // gamestartコマンドはC言語側で処理するため、ここでは処理しない
 
   // 行列乗算（JavaScript版）
   if (trimmedCommand.startsWith('matrixJs ')) {
@@ -90,7 +92,12 @@ const processJavaScriptCommand = (command: string): string | null => {
   return null; // JavaScript側で処理しない場合
 };
 
-const TerminalClient = () => {
+interface TerminalClientProps {
+  onGameStart?: () => void;
+  onReboot?: () => void;
+}
+
+const TerminalClient = ({ onGameStart, onReboot }: TerminalClientProps = {}) => {
   const terminalRef = useRef<HTMLDivElement>(null);
   const termInstance = useRef<Terminal | null>(null);
   const fitAddonInstance = useRef<FitAddon | null>(null);
@@ -145,7 +152,7 @@ const TerminalClient = () => {
             historyIndex.current = commandHistory.current.length;
 
             // まずJavaScript側で処理を試行
-            const jsResult = processJavaScriptCommand(trimmedInput);
+            const jsResult = processJavaScriptCommand(trimmedInput, onGameStart);
             if (jsResult !== null) {
               // JavaScript側で処理された場合
               if (trimmedInput === 'clear') {
@@ -160,8 +167,28 @@ const TerminalClient = () => {
                 const result = processCommandFuncRef.current(trimmedInput);
                 console.log(`WASM Result: "${result}"`);
 
-                // clearコマンドの場合は画面をクリア
-                if (trimmedInput === 'clear') {
+                // gamestartコマンドの場合、C言語側からの結果を判定してゲーム開始
+                if (trimmedInput === 'gamestart') {
+                  // C言語側からの結果をチェック
+                  if (result.includes('GAME_START_OK') && onGameStart) {
+                    term.writeln(result.replace(/\n/g, '\r\n'));
+                    setTimeout(() => {
+                      onGameStart();
+                    }, 1000);
+                  } else {
+                    term.writeln(result.replace(/\n/g, '\r\n'));
+                  }
+                } else if (trimmedInput === 'reboot') {
+                  // rebootコマンドの場合、C言語側からの結果を判定して再起動
+                  if (result.includes('REBOOT_SYSTEM_NOW') && onReboot) {
+                    term.writeln(result.replace(/\n/g, '\r\n'));
+                    setTimeout(() => {
+                      onReboot();
+                    }, 2000); // 2秒後に再起動
+                  } else {
+                    term.writeln(result.replace(/\n/g, '\r\n'));
+                  }
+                } else if (trimmedInput === 'clear') {
                   term.clear();
                 } else {
                   term.writeln(result.replace(/\n/g, '\r\n'));

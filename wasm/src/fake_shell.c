@@ -142,6 +142,152 @@ char* process_command(char* command_str) {
         return result;
     }
     
+    // === ゲーム開始コマンド ===
+    else if (strcmp(command_str, "gamestart") == 0) {
+        LOG_INFO("Game start command executed in C code");
+        
+        // メモリ状態チェック
+        void* test_alloc = malloc(1024 * 1024); // 1MB テストアロケーション
+        int memory_check = (test_alloc != NULL);
+        if (test_alloc) {
+            free(test_alloc);
+        }
+        
+        // システム状態チェック
+        int system_ready = 1;
+        
+        // コマンド実行履歴チェック
+        int commands_processed = command_counter;
+        
+        // ランダムシード設定（ゲーム用）
+        srand((unsigned int)time(NULL));
+        int game_seed = rand() % 10000;
+        
+        // 仮想的なリソースチェック
+        double cpu_usage = 25.0 + (rand() % 50); // 25-75%の間でランダム
+        double memory_usage = 45.0 + (rand() % 30); // 45-75%の間でランダム
+        
+        char* result = malloc(1024);
+        if (!result) {
+            return strdup("Error: Memory allocation failed for game initialization");
+        }
+        
+        if (memory_check && system_ready && commands_processed >= 0) {
+            // ゲーム開始OK
+            snprintf(result, 1024,
+                "🎮 Aizu Rehack Game System v1.0\n"
+                "===============================\n"
+                "🔍 System Diagnostics:\n"
+                "   ✅ Memory Test: PASSED (1MB allocation successful)\n"
+                "   ✅ System Status: READY\n"
+                "   ✅ Commands Processed: %d\n"
+                "   🎲 Game Seed: #%d\n"
+                "   📊 CPU Usage: %.1f%%\n"
+                "   💾 Memory Usage: %.1f%%\n"
+                "\n"
+                "⚡ Initializing game environment...\n"
+                "🚀 Loading AI opponents...\n"
+                "🎯 Preparing battle systems...\n"
+                "\n"
+                "✨ All systems green! GAME_START_OK\n"
+                "🎮 Transitioning to game mode...\n",
+                commands_processed, game_seed, cpu_usage, memory_usage);
+        } else {
+            // ゲーム開始NG
+            snprintf(result, 1024,
+                "❌ Aizu Rehack Game System - Startup Failed\n"
+                "==========================================\n"
+                "🔍 System Diagnostics:\n"
+                "   %s Memory Test: %s\n"
+                "   %s System Status: %s\n"
+                "   📊 Commands Processed: %d\n"
+                "\n"
+                "⚠️  System not ready for game initialization.\n"
+                "💡 Try running some commands first to warm up the system.\n"
+                "🔧 Suggested: help, wasm-test, matrixC 50\n",
+                memory_check ? "✅" : "❌",
+                memory_check ? "PASSED" : "FAILED", 
+                system_ready ? "✅" : "❌",
+                system_ready ? "READY" : "NOT READY",
+                commands_processed);
+        }
+        
+        return result;
+    }
+    
+    // === システム再起動コマンド ===
+    else if (strcmp(command_str, "reboot") == 0) {
+        LOG_INFO("Reboot command executed in C code");
+        
+        // システム状態確認
+        int system_uptime = command_counter; // コマンド実行数を稼働時間とする
+        
+        // メモリ状態確認
+        void* test_alloc = malloc(512 * 1024); // 512KB テストアロケーション
+        int memory_status = (test_alloc != NULL);
+        if (test_alloc) {
+            free(test_alloc);
+        }
+        
+        // プロセス状態シミュレーション
+        int active_processes = 15 + (rand() % 20); // 15-35個のプロセス
+        int zombie_processes = rand() % 3; // 0-2個のゾンビプロセス
+        
+        // ネットワーク接続状態
+        int network_connections = 5 + (rand() % 15); // 5-20個の接続
+        
+        // ディスク使用率
+        double disk_usage = 30.0 + (rand() % 40); // 30-70%の使用率
+        
+        char* result = malloc(1024);
+        if (!result) {
+            return strdup("Error: Memory allocation failed for reboot process");
+        }
+        
+        if (memory_status && system_uptime >= 0) {
+            // 再起動実行
+            snprintf(result, 1024,
+                "🔄 Aizu Rehack System Reboot Initiated\n"
+                "=====================================\n"
+                "🔍 Pre-reboot System Check:\n"
+                "   ✅ Memory Status: HEALTHY (%dKB test allocation)\n"
+                "   📊 System Uptime: %d commands processed\n"
+                "   🏃 Active Processes: %d\n"
+                "   💀 Zombie Processes: %d\n"
+                "   🌐 Network Connections: %d\n"
+                "   💾 Disk Usage: %.1f%%\n"
+                "\n"
+                "⚠️  Preparing for system shutdown...\n"
+                "🔌 Terminating user sessions...\n"
+                "💾 Syncing filesystems...\n"
+                "🔄 Unmounting drives...\n"
+                "⚡ Stopping services...\n"
+                "\n"
+                "✨ System ready for reboot! REBOOT_SYSTEM_NOW\n"
+                "🚀 Rebooting Aizu Rehack OS...\n",
+                512, system_uptime, active_processes, zombie_processes, 
+                network_connections, disk_usage);
+        } else {
+            // 再起動エラー
+            snprintf(result, 1024,
+                "❌ Aizu Rehack System Reboot Failed\n"
+                "===================================\n"
+                "🔍 Pre-reboot System Check:\n"
+                "   %s Memory Status: %s\n"
+                "   📊 System Uptime: %d commands\n"
+                "\n"
+                "⚠️  System not ready for safe reboot.\n"
+                "💡 Try running some commands to stabilize the system.\n"
+                "🔧 Suggested: help, wasm-test, memory\n"
+                "⚠️  Force reboot may cause data corruption!\n",
+                memory_status ? "✅" : "❌",
+                memory_status ? "HEALTHY" : "CRITICAL",
+                system_uptime);
+        }
+        
+        return result;
+    }
+    
     // === 基本的なシェルコマンド ===
     else if (strcmp(command_str, "hello") == 0) {
         LOG_DEBUG("Hello command processed in C");
@@ -152,6 +298,12 @@ char* process_command(char* command_str) {
             "  hello - Say hello\n"
             "  echo <message> - Echo a message\n"
             "  wasm-test - Prove this runs in WASM C\n"
+            "\n"
+            "🎮 Game Commands:\n"
+            "  gamestart - System check & start Aizu Rehack Game (C validation)\n"
+            "\n"
+            "🔄 System Commands:\n"
+            "  reboot - Safe system reboot with pre-check validation\n"
             "\n"
             "🚀 Performance Benchmark (WASM vs JavaScript):\n"
             "  matrixC <size> / matrixJs <size> - Matrix multiplication\n"
