@@ -11,6 +11,7 @@ export interface ChatProps {
   chatHistory: ChatMessage[];
   sendMessage: () => void;
   transitionToNextApp: () => void;
+  remainingChats: number;
   opponent: {
     name: string;
     level: number;
@@ -27,6 +28,7 @@ export default function PokemonChat({
   chatHistory,
   sendMessage,
   transitionToNextApp,
+  remainingChats,
   opponent,
 }: ChatProps) {
   return (
@@ -38,6 +40,7 @@ export default function PokemonChat({
         isLoading={isLoading}
         chatHistory={chatHistory}
         sendMessage={sendMessage}
+        remainingChats={remainingChats}
         transitionToNextApp={transitionToNextApp}
       />
     </div>
@@ -99,7 +102,7 @@ function Screen({
         />
         {/* Player Pokemon Info */}
         <PokemonInfo
-          name='RAICHU'
+          name='Linus Torvalds'
           className='mb-12'
           level={42}
           hp={39}
@@ -118,15 +121,13 @@ function Screen({
             {chatHistory.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${
-                  message.sender === 'player' ? 'justify-end' : 'justify-start'
-                }`}>
-                <div
-                  className={`max-w-[80%] p-2 rounded ${
-                    message.sender === 'player'
-                      ? 'bg-blue-100 text-right'
-                      : 'bg-gray-100'
+                className={`flex ${message.sender === 'player' ? 'justify-end' : 'justify-start'
                   }`}>
+                <div
+                  className={`max-w-[80%] p-2 rounded ${message.sender === 'player'
+                    ? 'bg-blue-100 text-right'
+                    : 'bg-gray-100'
+                    }`}>
                   <span className='font-mono text-sm'>{message.text}</span>
                 </div>
               </div>

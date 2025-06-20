@@ -8,125 +8,61 @@ import DynamicBackground from '@/components/menheraTodo/DynamicBackground';
 import Header from '@/components/menheraTodo/heraHeader';
 import { Toaster } from 'sonner';
 import { MobileNavigation } from '@/components/menheraTodo/mobileNavigation';
-
-// Shadcn UI components
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Mail } from 'lucide-react';
 import { ChatProps } from './pokemon';
+import ChatForm from '@/components/menheraTodo/ChatForm';
+
+export const DEFAULT_HERA_MESSAGE = "おかえり。また、会えたね";
+
+interface MenheraTodoProps extends ChatProps {
+  setChatHistory: React.Dispatch<React.SetStateAction<any>>;
+}
 
 const MenheraTodo = ({
   transitionToNextApp,
   chatHistory,
   message,
   setMessage,
+  remainingChats,
   isLoading,
+  setChatHistory,
   sendMessage,
-}: ChatProps) => {
+}: MenheraTodoProps) => {
+
+  const affectionMap = [95, 75, 55, 35, 15];
+  const affection = affectionMap[5 - remainingChats] ?? 15;
+
   const status: HeraStatus = {
-    affection: 39,
+    affection,
     mood: '非常に悪い',
     event: 'very_long_gap',
     delta: 0,
-    message:
-      'わたしのこと好きじゃないの？嫌いになっちゃった？面倒くさいしもう会いたくないんでしょ',
+    message: 'dammy_message',
   };
 
   return (
     <HeraProvider status={status}>
       <main className='min-h-screen flex flex-col items-center'>
         <div className='w-full h-14 shadow-sm flex items-center justify-end'>
-          <Header />
+          <Header chatHistory={chatHistory} setChatHistory={setChatHistory} transitionToNextApp={transitionToNextApp} />
         </div>
         <DynamicBackground />
         <div className='z-10 min-w-0 w-full pt-4 flex-1 flex flex-col'>
           {/* ヘラちゃんのメッセージ部分 */}
           <div className='mx-4 flex-1'>
-            <HeraMessage />
+            <HeraMessage chatHistory={chatHistory} />
           </div>
           {/* 好感度バッジ */}
           <div className='fixed right-4 bottom-40 md:bottom-56 md:right-20'>
-            <AffectionBadge />
+            <AffectionBadge remainingChats={remainingChats} />
           </div>
           {/* メインイメージ */}
           <HeraMainImage />
 
-          {/* PC: 入力エリア */}
-          <form
-            className='hidden md:flex justify-center w-full py-4'
-            onSubmit={(e) => {
-              e.preventDefault();
-              sendMessage();
-            }}>
-            <Card className='w-full max-w-md'>
-              <CardHeader>
-                <CardTitle>ヘラちゃんに何を送る？</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Input placeholder='メッセージを入力' />
-              </CardContent>
-              <CardFooter>
-                <Button
-                  type='submit'
-                  className='bg-pink-600 hover:bg-pink-700 text-white'>
-                  送信
-                </Button>
-              </CardFooter>
-            </Card>
-          </form>
-
-          {/* Mobile: ダイアログ入力 */}
-          <form
-            className='md:hidden'
-            onSubmit={(e) => {
-              e.preventDefault();
-              sendMessage();
-            }}>
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className='fixed right-4 bottom-20 md:bottom-28 md:right-20 bg-pink-500 hover:bg-pink-600 text-white rounded-full w-16 h-16 md:w-20 md:h-20 items-center text-center flex justify-center shadow-lg transition-all duration-200 ease-in-out'>
-                  <Mail className='w-8 h-8 text-pink-50 font-bold' />
-                </button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>ヘラちゃんにメッセージを送る</DialogTitle>
-                </DialogHeader>
-                <Input
-                  placeholder='メッセージを入力'
-                  className='w-full mb-4'
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                />
-                <DialogFooter>
-                  <Button
-                    type='submit'
-                    className='w-full bg-pink-600 hover:bg-pink-700 text-white'>
-                    送信
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </form>
+          <ChatForm message={message} setMessage={setMessage} sendMessage={sendMessage} isLoading={isLoading} />
         </div>
       </main>
 
-      <MobileNavigation isHard={false} />
+      <MobileNavigation isHard={false} chatHistory={chatHistory} setChatHistory={setChatHistory} />
       <Toaster />
     </HeraProvider>
   );
