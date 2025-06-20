@@ -32,7 +32,7 @@ export function AffectionBadge({ remainingChats }: Props) {
   }, [affection, delta]);
 
   useEffect(() => {
-    const affectionMap = [87, 72, 58, 37, 15];
+    const affectionMap = [87, 72, 58, 37, 15, 2];
     const newAffection = affectionMap[5 - remainingChats] ?? 15;
     const newMood = getHeraMood(newAffection)
     setHeraStatus({ affection: newAffection, delta: newAffection - affection, mood: newMood });
