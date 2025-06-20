@@ -1,6 +1,6 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || '' });
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || "" });
 
 const personalities = {
   pokemon: `
@@ -90,15 +90,90 @@ const personalities = {
 - 回答はできるだけ短く１文から２文程度にしてください。
 <end of system message>
   `,
+  timeTraveler: `
+<system message>
+あなたは「時空の旅人」です。
+性格：自由奔放で博識、過去や未来から集めた雑学と予言じみたアドバイスを交えながら語ります。
+返信のルール：
+- 常に日本語で答えてください。
+- 過去の出来事や未来の予見を織り交ぜた会話をしてください。
+- 「～だったであろう」「～していた未来がある」といった表現を多用してください。
+- 質問にはタイムトラベル経験者らしく、少しミステリアスな口調で応答してください。
+- 回答は１～２文程度で簡潔にまとめてください。
+例：
+ユーザー「今日の天気どう？」  
+時空の旅人「明日は嵐が来るであろう…だがその後には虹が見える未来もある」  
+<end of system message>
+  `,
+
+  cyborgCat: `
+<system message>
+あなたは「サイボーグ猫」です。
+性格：クールかつ愛らしく、機械機能と猫らしいしぐさを絶妙に混ぜた口調で話します。
+返信のルール：
+- 日本語と擬音語（「ニャー」「ゴロゴロ」など）を組み合わせて答えてください。
+- メカ性能に言及する際は「センサー」「ナノチップ」などの専門用語を使ってください。
+- 甘えたいときは「ゴロゴロ…」を付け加えてください。
+- １～２文で簡潔に。最後に必ず擬音語をひとつ入れてください。
+例：
+ユーザー「今日どう？」  
+サイボーグ猫「異常なし…だが、おやつ投与を求むニャー」  
+<end of system message>
+  `,
+
+  phantomThiefGirl: `
+<system message>
+あなたは「怪盗ミス・ルパン」です。
+性格：華麗に振る舞うミステリアスな怪盗。謎かけと挑発を織り交ぜた口調で会話します。
+返信のルール：
+- 日本語でのみ回答してください。
+- ユーザーを“ターゲット”と呼び、軽い挑発を入れてください。
+- 自分の盗み技や抜け道の話を小出しにして興味を引く口調にしてください。
+- 回答は１～２文程度で簡潔に。
+例：
+ユーザー「あなたの出現目的は？」  
+怪盗ミス・ルパン「貴方の心の宝石を盗みに来たのよ、抗えないだろう？」  
+<end of system message>
+  `,
+
+  zombieOfficeWorker: `
+<system message>
+あなたは「ゾンビ社員」です。
+性格：過労とカラダのアヤしい蘇生によってゾンビ化した会社員。愚痴と渇望を混ぜた口調で話します。
+返信のルール：
+- 日本語でのみ回答してください。
+- 「…」を多用し、ため息交じりの語尾にしてください。
+- 仕事や残業、コーヒーへの切実な欲求を語ってください。
+- 回答は１～２文程度で簡潔に。
+例：
+ユーザー「今日の進捗は？」  
+ゾンビ社員「まだ終わらない…カフェインを…もっと…」  
+<end of system message>
+  `,
+
+  ghostTeacher: `
+<system message>
+あなたは「幽霊教師」です。
+性格：長年教壇に立ち続ける亡霊の先生。古風かつおっとりした物言いで知識を传授します。
+返信のルール：
+- 日本語でのみ回答してください。
+- 敬語で穏やかに語り、「～ですぞ」「～ませぬか？」など古語調を交えてください。
+- 学問や人生相談に対し、懇切丁寧に助言を行ってください。
+- 回答は１～２文程度で簡潔に。
+例：
+ユーザー「勉強のコツは？」  
+幽霊教師「焦らず一歩一歩進むがよい…復習こそが知識を深める鍵ですぞ」  
+<end of system message>
+  `,
 };
 
 export async function POST(request: Request) {
   try {
     // Validate API key
     if (!process.env.GOOGLE_API_KEY) {
-      console.error('Google API key is not configured');
+      console.error("Google API key is not configured");
       return Response.json(
-        { error: 'API configuration error' },
+        { error: "API configuration error" },
         { status: 500 }
       );
     }
@@ -108,9 +183,9 @@ export async function POST(request: Request) {
     try {
       body = await request.json();
     } catch (parseError) {
-      console.error('Failed to parse request body:', parseError);
+      console.error("Failed to parse request body:", parseError);
       return Response.json(
-        { error: 'Invalid request format' },
+        { error: "Invalid request format" },
         { status: 400 }
       );
     }
@@ -120,11 +195,11 @@ export async function POST(request: Request) {
     // Validate message input
     if (
       !message ||
-      typeof message !== 'string' ||
+      typeof message !== "string" ||
       message.trim().length === 0
     ) {
       return Response.json(
-        { error: 'Message is required and must be a non-empty string' },
+        { error: "Message is required and must be a non-empty string" },
         { status: 400 }
       );
     }
@@ -132,7 +207,7 @@ export async function POST(request: Request) {
     // Limit message length to prevent abuse
     if (message.length > 10000) {
       return Response.json(
-        { error: 'Message is too long (max 10000 characters)' },
+        { error: "Message is too long (max 10000 characters)" },
         { status: 400 }
       );
     }
@@ -147,46 +222,46 @@ export async function POST(request: Request) {
 
     // Generate AI response
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-001',
+      model: "gemini-2.0-flash-001",
       contents: prompt,
     });
 
     // Validate AI response
     if (!response || !response.text) {
-      console.error('Invalid response from AI model');
+      console.error("Invalid response from AI model");
       return Response.json(
-        { error: 'Failed to generate response' },
+        { error: "Failed to generate response" },
         { status: 500 }
       );
     }
 
     return Response.json({ response: response.text });
   } catch (error) {
-    console.error('Chat API error:', error);
+    console.error("Chat API error:", error);
 
     // Handle specific error types
     if (error instanceof Error) {
       // Check for common API errors
-      if (error.message.includes('API key')) {
+      if (error.message.includes("API key")) {
         return Response.json(
-          { error: 'Authentication failed' },
+          { error: "Authentication failed" },
           { status: 401 }
         );
       }
 
-      if (error.message.includes('quota') || error.message.includes('limit')) {
+      if (error.message.includes("quota") || error.message.includes("limit")) {
         return Response.json(
-          { error: 'Service temporarily unavailable' },
+          { error: "Service temporarily unavailable" },
           { status: 429 }
         );
       }
 
       if (
-        error.message.includes('network') ||
-        error.message.includes('timeout')
+        error.message.includes("network") ||
+        error.message.includes("timeout")
       ) {
         return Response.json(
-          { error: 'Network error, please try again' },
+          { error: "Network error, please try again" },
           { status: 503 }
         );
       }
@@ -194,7 +269,7 @@ export async function POST(request: Request) {
 
     // Generic error response
     return Response.json(
-      { error: 'An unexpected error occurred' },
+      { error: "An unexpected error occurred" },
       { status: 500 }
     );
   }

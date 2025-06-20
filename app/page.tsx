@@ -74,6 +74,41 @@ const opponents = {
     maxHp: 110,
     sprite: '/pirate-captain.png',
   },
+  timeTraveler: {
+    name: '時空の旅人',
+    level: 75,
+    hp: 130,
+    maxHp: 130,
+    sprite: '/time-traveler.png',
+  },
+  cyborgCat: {
+    name: 'サイボーグ猫',
+    level: 40,
+    hp: 95,
+    maxHp: 95,
+    sprite: '/cyborg-cat.png',
+  },
+  phantomThiefGirl: {
+    name: '怪盗ミス・ルパン',
+    level: 60,
+    hp: 105,
+    maxHp: 105,
+    sprite: '/phantom-thief-girl.png',
+  },
+  zombieOfficeWorker: {
+    name: 'ゾンビ社員',
+    level: 35,
+    hp: 85,
+    maxHp: 85,
+    sprite: '/zombie-office-worker.png',
+  },
+  ghostTeacher: {
+    name: '幽霊教師',
+    level: 50,
+    hp: 100,
+    maxHp: 100,
+    sprite: '/ghost-teacher.png',
+  },
 };
 
 // 配列をシャッフルするユーティリティ
@@ -90,8 +125,8 @@ export default function Home() {
   // 初回レンダリング時にアプリの順序をランダムに決定
   const appOrder = useMemo(() => shuffleArray(apps), []);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const currentApp = appOrder[currentIndex];
-  // const currentApp = apps[1]; // デバッグ用に固定
+  // const currentApp = appOrder[currentIndex];
+  const currentApp = apps[0]; // デバッグ用に固定
 
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
