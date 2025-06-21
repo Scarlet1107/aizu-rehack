@@ -28,10 +28,10 @@ import { Button } from "../ui/button";
 interface Props {
   chatHistory: ChatMessage[];
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  transitionToNextApp?: () => void;
+  handleBackToTerminal?: () => void;
 }
 
-export default function Header({ chatHistory, setChatHistory, transitionToNextApp }: Props) {
+export default function Header({ chatHistory, setChatHistory, handleBackToTerminal }: Props) {
   const tabs = [
     {
       href: "/",
@@ -117,7 +117,7 @@ export default function Header({ chatHistory, setChatHistory, transitionToNextAp
                       <AlertDialogFooter>
                         <AlertDialogCancel>まだ一緒にいる</AlertDialogCancel>
                         <AlertDialogAction asChild>
-                          <form action={transitionToNextApp}>
+                          <form action={handleBackToTerminal}>
                             <Button type="submit">バイバイ</Button>
                           </form>
                         </AlertDialogAction>

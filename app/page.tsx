@@ -1,11 +1,26 @@
 'use client';
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+import BootSequence from '@/components/BootSequence';
 import PokemonChat from './pokemon';
 import MenheraTodo, { DEFAULT_HERA_MESSAGE } from './menheraTodo';
 import WordCounter from './wordCounter';
 import SocialFeed from './sns';
+
+// ターミナルクライアントを動的インポート（WASM対応）
+const DynamicTerminalClient = dynamic(() => import('@/components/TerminalClient'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-screen w-screen bg-black text-green-400 font-mono flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+        <p>Loading Terminal...</p>
+      </div>
+    </div>
+  ),
+});
 
 export interface ChatMessage {
   id: number;
@@ -14,14 +29,16 @@ export interface ChatMessage {
 }
 
 type AppTypes = 'pokemon' | 'menheraTodo' | 'wordCounter' | 'sns';
+type SystemState = 'booting' | 'terminal' | 'gaming';
+
 const apps: AppTypes[] = ['pokemon', 'menheraTodo', 'wordCounter', 'sns'];
 
 // アプリごとのチャット上限回数
 const chatLimits: Record<AppTypes, number> = {
   pokemon: 3,
   menheraTodo: 5,
-  wordCounter: 1,
-  sns: 2,
+  wordCounter: 2,
+  sns: 3,
 };
 
 const opponents = {
@@ -122,11 +139,14 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export default function Home() {
-  // 初回レンダリング時にアプリの順序をランダムに決定
+  // システム状態管理
+  const [systemState, setSystemState] = useState<SystemState>('booting');
+
+  // ゲーム部分の状態（既存のロジック）
   const appOrder = useMemo(() => shuffleArray(apps), []);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const currentApp = appOrder[currentIndex];
-  const currentApp = apps[0]; // デバッグ用に固定
+  // const currentApp = apps[0]; // デバッグ用に固定
+  const currentApp = appOrder[currentIndex];
 
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -137,30 +157,54 @@ export default function Home() {
   );
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // boot完了時にターミナルに移行
+  const handleBootComplete = () => {
+    setSystemState('terminal');
+  };
+
+  // gamestartコマンドでゲームに移行
+  const handleGameStart = () => {
+    setSystemState('gaming');
+  };
+
+  // rebootコマンドでシステム再起動
+  const handleReboot = () => {
+    // 全ての状態をリセット
+    setSystemState('booting');
+    setChatHistory([]);
+    setCurrentIndex(0);
+    setMessage('');
+    setOpponentIdx(null);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setRemainingChats(chatLimits[currentApp]);
+  };
+
   // 初回レンダリングでランダムに相手を決定 (ただしMenheraTodoは固定)
   useEffect(() => {
-    if (currentApp === 'menheraTodo') {
-      setOpponentIdx(Object.keys(opponents).indexOf('hera'));
-    } else {
-      setOpponentIdx(
-        Math.floor(
-          Math.random() * Object.keys(opponents).length
-        )
-      );
+    if (systemState === 'gaming') {
+      if (currentApp === 'menheraTodo') {
+        setOpponentIdx(Object.keys(opponents).indexOf('hera'));
+      } else {
+        setOpponentIdx(
+          Math.floor(Math.random() * Object.keys(opponents).length)
+        );
+      }
     }
-  }, [currentApp]);
+  }, [currentApp, systemState]);
 
   // currentApp が変わるたびにタイマーと残チャット回数をリセット
   useEffect(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setRemainingChats(chatLimits[currentApp]);
-    timerRef.current = setTimeout(() => {
-      transitionToNextApp();
-    }, 60 * 1000);
-    return () => {
+    if (systemState === 'gaming') {
       if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [currentApp]);
+      setRemainingChats(chatLimits[currentApp]);
+      timerRef.current = setTimeout(() => {
+        transitionToNextApp();
+      }, 60 * 1000);
+      return () => {
+        if (timerRef.current) clearTimeout(timerRef.current);
+      };
+    }
+  }, [currentApp, systemState]);
 
   // メッセージ送信
   const sendMessage = async () => {
@@ -218,12 +262,12 @@ export default function Home() {
 
   // MenheraTodo表示時に初期チャットをセット
   useEffect(() => {
-    if (currentApp === 'menheraTodo') {
+    if (systemState === 'gaming' && currentApp === 'menheraTodo') {
       setChatHistory([
         { id: 1, text: DEFAULT_HERA_MESSAGE, sender: 'opponent' }
       ]);
     }
-  }, [currentApp]);
+  }, [currentApp, systemState]);
 
   const getJapaneseErrorMessage = (errorMessage: string): string => {
     const errorMap: Record<string, string> = {
@@ -251,38 +295,69 @@ export default function Home() {
     setChatHistory([]);
   };
 
-  if (opponentIdx === null) {
-    return <div>Loading...</div>;
-  }
-
-  const commonProps = {
-    opponent: Object.values(opponents)[opponentIdx],
-    message,
-    setMessage,
-    isLoading,
-    chatHistory,
-    sendMessage,
-    transitionToNextApp,
-    remainingChats,
+  // ターミナルからOSに戻る機能
+  const handleBackToTerminal = () => {
+    setSystemState('terminal');
+    setChatHistory([]);
+    setCurrentIndex(0);
   };
 
-  return (
-    <main>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentApp}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          {currentApp === 'pokemon' && <PokemonChat {...commonProps} />}
-          {currentApp === 'menheraTodo' && <MenheraTodo {...commonProps} setChatHistory={setChatHistory} />}
-          {currentApp === 'wordCounter' && <WordCounter {...commonProps} />}
-          {currentApp === 'sns' && <SocialFeed {...commonProps} />}
+  // システム状態に応じた画面描画
+  if (systemState === 'booting') {
+    return <BootSequence onBootComplete={handleBootComplete} />;
+  }
 
-        </motion.div>
-      </AnimatePresence>
-    </main>
+  if (systemState === 'terminal') {
+    return (
+      <div className="h-screen w-screen bg-black">
+        <div className="h-full w-full">
+          <DynamicTerminalClient onGameStart={handleGameStart} onReboot={handleReboot} />
+        </div>
+      </div>
+    );
+  }
+
+  // ゲーム状態
+  if (systemState === 'gaming' && opponentIdx !== null) {
+    const commonProps = {
+      opponent: Object.values(opponents)[opponentIdx],
+      message,
+      setMessage,
+      isLoading,
+      chatHistory,
+      sendMessage,
+      transitionToNextApp,
+      handleBackToTerminal,
+      remainingChats,
+    };
+
+    return (
+      <main>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentApp}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {currentApp === 'pokemon' && <PokemonChat {...commonProps} />}
+            {currentApp === 'menheraTodo' && <MenheraTodo {...commonProps} setChatHistory={setChatHistory} />}
+            {currentApp === 'wordCounter' && <WordCounter {...commonProps} />}
+            {currentApp === 'sns' && <SocialFeed {...commonProps} />}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+    );
+  }
+
+  // Loading状態
+  return (
+    <div className="h-screen w-screen bg-black text-green-400 font-mono flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+        <p>Initializing Aizu Rehack System...</p>
+      </div>
+    </div>
   );
 }
