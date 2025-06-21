@@ -31,6 +31,7 @@ export default function PokemonChat({
   transitionToNextApp,
   remainingChats,
   opponent,
+  handleBackToTerminal,
 }: ChatProps) {
   return (
     <div className='h-screen w-screen py-6 bg-neutral-700'>
@@ -43,6 +44,7 @@ export default function PokemonChat({
         sendMessage={sendMessage}
         remainingChats={remainingChats}
         transitionToNextApp={transitionToNextApp}
+        handleBackToTerminal={handleBackToTerminal}
       />
     </div>
   );
@@ -56,6 +58,8 @@ function Screen({
   sendMessage,
   transitionToNextApp,
   opponent,
+  handleBackToTerminal,
+  remainingChats,
 }: ChatProps) {
   const [showChatInput, setShowChatInput] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -106,7 +110,7 @@ function Screen({
           name='Linus Torvalds'
           className='mb-12'
           level={42}
-          hp={39}
+          hp={(remainingChats / 3) * 100}
           maxHp={100}
         />
       </div>
@@ -122,13 +126,15 @@ function Screen({
             {chatHistory.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.sender === 'player' ? 'justify-end' : 'justify-start'
-                  }`}>
+                className={`flex ${
+                  message.sender === 'player' ? 'justify-end' : 'justify-start'
+                }`}>
                 <div
-                  className={`max-w-[80%] p-2 rounded ${message.sender === 'player'
-                    ? 'bg-blue-100 text-right'
-                    : 'bg-gray-100'
-                    }`}>
+                  className={`max-w-[80%] p-2 rounded ${
+                    message.sender === 'player'
+                      ? 'bg-blue-100 text-right'
+                      : 'bg-gray-100'
+                  }`}>
                   <span className='font-mono text-sm'>{message.text}</span>
                 </div>
               </div>
@@ -143,8 +149,10 @@ function Screen({
           <div className='grid grid-cols-2 gap-1 text-center h-full'>
             <Button onClick={handleFightClick}>はなす</Button>
             <Button onClick={handleFightClick}>しゃべる</Button>
-            <Button onClick={handleFightClick}>さけぶ</Button>
             <Button onClick={transitionToNextApp}>にげる</Button>
+            <Button onClick={handleBackToTerminal ?? transitionToNextApp}>
+              でばっぐ
+            </Button>
           </div>
         ) : (
           /* Chat Input */
@@ -216,7 +224,7 @@ const PokemonInfo = ({
       <div className='text-xs mb-1'>HP</div>
       <div className='w-32 h-2 bg-white border border-black'>
         <div
-          className='h-full bg-green-500'
+          className='h-full bg-green-500 transition-all duration-1000'
           style={{ width: `${hpPercentage}%` }}></div>
       </div>
     </div>
