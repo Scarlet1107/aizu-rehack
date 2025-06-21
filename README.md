@@ -38,10 +38,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 *   `public/`: 静的アセット (画像、フォントなど)
 *   `wasm/`: WebAssemblyのソースコード (C言語) およびビルド関連ファイル
 
-### PWA対応
-
-このアプリケーションは、PWA (Progressive Web App) としての基本的な機能を備えており、対応ブラウザではホーム画面へのインストールやオフラインでの一部利用が可能です。
-
 ## Getting Started
 
 First, run the development server:
