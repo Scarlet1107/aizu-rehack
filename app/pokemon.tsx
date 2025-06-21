@@ -10,6 +10,7 @@ export interface ChatProps {
   isLoading: boolean;
   chatHistory: ChatMessage[];
   sendMessage: () => void;
+  handleBackToTerminal?: () => void;
   transitionToNextApp: () => void;
   remainingChats: number;
   opponent: {

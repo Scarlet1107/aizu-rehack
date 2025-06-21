@@ -19,6 +19,7 @@ interface MenheraTodoProps extends ChatProps {
 
 const MenheraTodo = ({
   transitionToNextApp,
+  handleBackToTerminal,
   chatHistory,
   message,
   setMessage,
@@ -39,11 +40,12 @@ const MenheraTodo = ({
     message: 'dammy_message',
   };
 
+
   return (
     <HeraProvider status={status}>
       <main className='min-h-screen flex flex-col items-center'>
         <div className='w-full h-14 shadow-sm flex items-center justify-end'>
-          <Header chatHistory={chatHistory} setChatHistory={setChatHistory} transitionToNextApp={transitionToNextApp} />
+          <Header chatHistory={chatHistory} setChatHistory={setChatHistory} handleBackToTerminal={handleBackToTerminal} />
         </div>
         <DynamicBackground />
         <div className='z-10 min-w-0 w-full pt-4 flex-1 flex flex-col'>

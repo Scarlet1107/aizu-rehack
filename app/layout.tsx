@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Aizu Rehack App",
-  description: "勝ちたい",
+  description: "Team bless you",
 };
 
 export default function RootLayout({

@@ -37,8 +37,8 @@ const apps: AppTypes[] = ['pokemon', 'menheraTodo', 'wordCounter', 'sns'];
 const chatLimits: Record<AppTypes, number> = {
   pokemon: 3,
   menheraTodo: 5,
-  wordCounter: 1,
-  sns: 2,
+  wordCounter: 2,
+  sns: 3,
 };
 
 const opponents = {
@@ -145,7 +145,8 @@ export default function Home() {
   // ゲーム部分の状態（既存のロジック）
   const appOrder = useMemo(() => shuffleArray(apps), []);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const currentApp = apps[0]; // デバッグ用に固定
+  // const currentApp = apps[0]; // デバッグ用に固定
+  const currentApp = appOrder[currentIndex];
 
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -325,7 +326,8 @@ export default function Home() {
       isLoading,
       chatHistory,
       sendMessage,
-      transitionToNextApp: handleBackToTerminal, // ゲームからターミナルに戻る
+      transitionToNextApp,
+      handleBackToTerminal,
       remainingChats,
     };
 
