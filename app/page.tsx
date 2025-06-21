@@ -211,7 +211,7 @@ export default function Home() {
 
   // メッセージ送信
   const sendMessage = async () => {
-    if (message.trim() === '' || isLoading) return;
+    if (message.trim() === '' || isLoading || remainingChats <= 0) return;
 
     // 送信前に残チャットを計算しておく
     let nextRem = remainingChats - 1;
