@@ -10,17 +10,20 @@ import WordCounter from './wordCounter';
 import SocialFeed from './sns';
 
 // ターミナルクライアントを動的インポート（WASM対応）
-const DynamicTerminalClient = dynamic(() => import('@/components/TerminalClient'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-screen w-screen bg-black text-green-400 font-mono flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p>Loading Terminal...</p>
+const DynamicTerminalClient = dynamic(
+  () => import('@/components/TerminalClient'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className='h-screen w-screen bg-black text-green-400 font-mono flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='animate-spin w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full mx-auto mb-4'></div>
+          <p>Loading Terminal...</p>
+        </div>
       </div>
-    </div>
-  ),
-});
+    ),
+  }
+);
 
 export interface ChatMessage {
   id: number;
@@ -264,7 +267,7 @@ export default function Home() {
   useEffect(() => {
     if (systemState === 'gaming' && currentApp === 'menheraTodo') {
       setChatHistory([
-        { id: 1, text: DEFAULT_HERA_MESSAGE, sender: 'opponent' }
+        { id: 1, text: DEFAULT_HERA_MESSAGE, sender: 'opponent' },
       ]);
     }
   }, [currentApp, systemState]);
@@ -309,9 +312,12 @@ export default function Home() {
 
   if (systemState === 'terminal') {
     return (
-      <div className="h-screen w-screen bg-black">
-        <div className="h-full w-full">
-          <DynamicTerminalClient onGameStart={handleGameStart} onReboot={handleReboot} />
+      <div className='h-screen w-screen bg-black'>
+        <div className='h-full w-full'>
+          <DynamicTerminalClient
+            onGameStart={handleGameStart}
+            onReboot={handleReboot}
+          />
         </div>
       </div>
     );
@@ -333,16 +339,23 @@ export default function Home() {
 
     return (
       <main>
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode='wait'>
           <motion.div
             key={currentApp}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {currentApp === 'pokemon' && <PokemonChat {...commonProps} />}
-            {currentApp === 'menheraTodo' && <MenheraTodo {...commonProps} setChatHistory={setChatHistory} />}
+            transition={{ duration: 0.5 }}>
+            {currentApp === 'pokemon' && (
+              <PokemonChat
+                {...commonProps}
+                handleBackToTerminal={handleBackToTerminal}
+                transitionToNextApp={transitionToNextApp}
+              />
+            )}
+            {currentApp === 'menheraTodo' && (
+              <MenheraTodo {...commonProps} setChatHistory={setChatHistory} />
+            )}
             {currentApp === 'wordCounter' && <WordCounter {...commonProps} />}
             {currentApp === 'sns' && <SocialFeed {...commonProps} />}
           </motion.div>
@@ -353,9 +366,9 @@ export default function Home() {
 
   // Loading状態
   return (
-    <div className="h-screen w-screen bg-black text-green-400 font-mono flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+    <div className='h-screen w-screen bg-black text-green-400 font-mono flex items-center justify-center'>
+      <div className='text-center'>
+        <div className='animate-spin w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full mx-auto mb-4'></div>
         <p>Initializing Aizu Rehack System...</p>
       </div>
     </div>
