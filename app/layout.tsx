@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aizu Rehack App",
+  title: "May rand() GUIDE you",
   description: "Team bless you",
 };
 
