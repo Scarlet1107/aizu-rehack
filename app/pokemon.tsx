@@ -10,7 +10,7 @@ export interface ChatProps {
   isLoading: boolean;
   chatHistory: ChatMessage[];
   sendMessage: () => void;
-  handleBackToTerminal: () => void;
+  handleBackToTerminal?: () => void;
   transitionToNextApp: () => void;
   remainingChats: number;
   opponent: {
@@ -150,7 +150,9 @@ function Screen({
             <Button onClick={handleFightClick}>はなす</Button>
             <Button onClick={handleFightClick}>しゃべる</Button>
             <Button onClick={transitionToNextApp}>にげる</Button>
-            <Button onClick={handleBackToTerminal}>でばっぐ</Button>
+            <Button onClick={handleBackToTerminal ?? transitionToNextApp}>
+              でばっぐ
+            </Button>
           </div>
         ) : (
           /* Chat Input */
