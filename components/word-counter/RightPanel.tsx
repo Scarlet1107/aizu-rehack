@@ -6,15 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Send, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ChatProps } from "@/app/pokemon";
+import { useTextContext } from "./TextContext";
 
 const RightPanel = ({ transitionToNextApp, chatHistory, message, setMessage, isLoading, sendMessage, remainingChats, opponent }: ChatProps) => {
   // const [messages, setMessages] = useState<
   //   { user: string; bot: string | null }[]
   // >([]);
+
+  const { text, setText } = useTextContext(); // 入力された文字列
+
+  useEffect(() => {
+    console.log("Chat history updated:", chatHistory);
+    setText(chatHistory.map(msg => msg.text).join("\n"));
+  }, [chatHistory]);
+
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+
 
   useEffect(() => {
     scrollToBottom();

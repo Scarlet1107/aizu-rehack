@@ -31,6 +31,7 @@ export default function WordCounter({
         setIsMobile(checkMobile);
     }, [checkMobile]);
 
+
     // 初回のサーバーサイド描画では、空の要素を返す
     if (isMobile === null) {
         return (

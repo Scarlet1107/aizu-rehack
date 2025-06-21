@@ -148,7 +148,7 @@ export default function Home() {
   // ゲーム部分の状態（既存のロジック）
   const appOrder = useMemo(() => shuffleArray(apps), []);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const currentApp = apps[0]; // デバッグ用に固定
+  // const currentApp = apps[2]; // デバッグ用に固定
   const currentApp = appOrder[currentIndex];
 
   const [message, setMessage] = useState('');
